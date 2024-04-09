@@ -1,56 +1,50 @@
 /****************************************************************************************
-* uCos-II Multitasking Application Code
-*****************************************************************************************
-*
-* Program Name : Signalling using Semaphore
-* Description  : This program creates total three uCos-II tasks; out of which
-*                main task acts as a parent task and creates two child tasks. 
-*				 Task0 sends a signal to Task1 by signalling Semaphore to indicate
-*				 occurance of an event, for which Task1 was waiting
-*
-* 
-* MicroEmbedded Technologies
-* Processor : NXP LPC2148
-* Board		: Micro-A748
-*
-****************************************************************************************/
-
+ * uCos-II Multitasking Application Code
+ *****************************************************************************************
+ *
+ * Program Name : Signalling using Semaphore
+ * Description  : This program creates total three uCos-II tasks; out of which
+ *                main task acts as a parent task and creates two child tasks.
+ *				 Task0 sends a signal to Task1 by signalling Semaphore to indicate
+ *				 occurance of an event, for which Task1 was waiting
+ *
+ *
+ * MicroEmbedded Technologies
+ * Processor : NXP LPC2148
+ * Board		: Micro-A748
+ *
+ ****************************************************************************************/
 
 #include <includes.h>
 #include "func.h"
 
 /********** Define Task Priorities ***********/
-#define  APP_TASK_START_PRIO                   4
-#define  APP_TASK0_PRIO                        5
-#define  APP_TASK1_PRIO                        6
-#define  APP_TASK2_PRIO                        7
-
-
+#define APP_TASK_START_PRIO 4
+#define APP_TASK0_PRIO 5
+#define APP_TASK1_PRIO 6
+#define APP_TASK2_PRIO 7
 
 /*--------------- AAPLICATION STACKS ---------*/
-static  OS_STK       AppTaskStartStk[APP_TASK_STK_SIZE];
-static  OS_STK       AppTask0stk[APP_TASK_STK_SIZE];		/* Create the required number of stacks need for every child task*/
-static  OS_STK       AppTask1stk[APP_TASK_STK_SIZE];
-static  OS_STK       AppTask2stk[APP_TASK_STK_SIZE];
-
-
+static OS_STK AppTaskStartStk[APP_TASK_STK_SIZE];
+static OS_STK AppTask0stk[APP_TASK_STK_SIZE]; /* Create the required number of stacks need for every child task*/
+static OS_STK AppTask1stk[APP_TASK_STK_SIZE];
+static OS_STK AppTask2stk[APP_TASK_STK_SIZE];
 
 /*-------------LOCAL FUNCTION PROTOTYPES--------------*/
 
 /*--------------- A PARENT TASK (MAIN TASK) ---------*/
-static  void  AppTaskStart (void        *p_arg); 			 /* Main(Parent) Task Function */
-static  void  AppTaskCreate(void);				  			 /* Separate Function To Create Child Task(s) */
+static void AppTaskStart(void *p_arg); /* Main(Parent) Task Function */
+static void AppTaskCreate(void);	   /* Separate Function To Create Child Task(s) */
 
 /*--------------- CHILDERN TRASKS --------------*/
-static  void  AppTask0   	 (void        *p_arg);			 
-static  void  AppTask1     	 (void        *p_arg);			 
-static  void  AppTask2  	 (void        *p_arg);	
+static void AppTask0(void *p_arg);
+static void AppTask1(void *p_arg);
+static void AppTask2(void *p_arg);
 
-OS_EVENT     *writeMutex;                                /* Semaphore  */
-unsigned int  readCount  = 0;                                /* Semaphore  */
-OS_EVENT     *readCountMutex;                                /* Semaphore  */
+OS_EVENT *writeMutex;		/* Semaphore  */
+unsigned int readCount = 0; /* Semaphore  */
+OS_EVENT *readCountMutex;	/* Semaphore  */
 
-		 
 /*
 *********************************************************************************************************
 *                                                main()
@@ -63,63 +57,61 @@ OS_EVENT     *readCountMutex;                                /* Semaphore  */
 * Return(s)   : none
 **********************************************************************************************************/
 
-int  main (void)
+int main(void)
 {
-    BSP_IntDisAll();                          /* Disable all interrupts until we are ready to accept them */
-    OSInit();                                 /* Initialize "uC/OS-II, The Real-Time Kernel"              */
-	
-    OSTaskCreate(AppTaskStart,                               /* Create the starting task i.e. Main Task        */
-                    (void *)0,
-                    (OS_STK *)&AppTaskStartStk[APP_TASK_STK_SIZE - 1],
-                    APP_TASK_START_PRIO);
+	BSP_IntDisAll(); /* Disable all interrupts until we are ready to accept them */
+	OSInit();		 /* Initialize "uC/OS-II, The Real-Time Kernel"              */
 
-    OSStart();                                                  /* Start multitasking (i.e. give control to uC/OS-II)       */
-		printf("Here");
+	OSTaskCreate(AppTaskStart, /* Create the starting task i.e. Main Task        */
+				 (void *)0,
+				 (OS_STK *)&AppTaskStartStk[APP_TASK_STK_SIZE - 1],
+				 APP_TASK_START_PRIO);
+
+	OSStart(); /* Start multitasking (i.e. give control to uC/OS-II)       */
+	printf("Here");
 }
 
-
 /***************************************************************************************
-*                                          AppTaskStart()
-*
-* Description : The startup task. The uC/OS-II ticker should only be initialize once multitasking starts.
-*
-* Argument(s) : p_arg       Argument passed to 'AppTaskStart()' by 'OSTaskCreate()'.
-*
-* Return(s)   : none.
-*
-* Note(s)     : (1) The first line of code is used to prevent a compiler warning because 'p_arg' is not
-*                   used.  The compiler should not generate any code for this 
-*					statement.
-*
-*               (2) Interrupts are enabled by uCoss-II once the task starts because 
-*					main() has disbled it.
-****************************************************************************************/
+ *                                          AppTaskStart()
+ *
+ * Description : The startup task. The uC/OS-II ticker should only be initialize once multitasking starts.
+ *
+ * Argument(s) : p_arg       Argument passed to 'AppTaskStart()' by 'OSTaskCreate()'.
+ *
+ * Return(s)   : none.
+ *
+ * Note(s)     : (1) The first line of code is used to prevent a compiler warning because 'p_arg' is not
+ *                   used.  The compiler should not generate any code for this
+ *					statement.
+ *
+ *               (2) Interrupts are enabled by uCoss-II once the task starts because
+ *					main() has disbled it.
+ ****************************************************************************************/
 
-static  void  AppTaskStart (void *p_arg)
+static void AppTaskStart(void *p_arg)
 {
-    p_arg = p_arg;							/*Just to avoid compiler Warning 			*/
+	p_arg = p_arg; /*Just to avoid compiler Warning 			*/
 
-    BSP_Init();                             /* Initialize BSP functions 	*/ 
-	InitLCD();								/* Initialize LCD	*/
-	kbdInit();								/* Initialize Keyboard	*/
-	ADCInit();								/* Initialize ADC	*/
-	LEDInit();	  							/* Initialize LED	*/
-	UartInit(9600);							/* Initialise the UART*/	
+	BSP_Init();		/* Initialize BSP functions 	*/
+	InitLCD();		/* Initialize LCD	*/
+	kbdInit();		/* Initialize Keyboard	*/
+	ADCInit();		/* Initialize ADC	*/
+	LEDInit();		/* Initialize LED	*/
+	UartInit(9600); /* Initialise the UART*/
 
-	writeMutex = OSSemCreate(0);					/* Create a Semaphore */
+	writeMutex = OSSemCreate(0); /* Create a Semaphore */
 	readCount = 0;
 	readCountMutex = OSSemCreate(0);
 
-	AppTaskCreate();                        /* Create application tasks  (child tasks)        */
+	AppTaskCreate(); /* Create application tasks  (child tasks)        */
 
-  while(DEF_TRUE)
+	while (DEF_TRUE)
 	{
-	 printf(" \r\nMAIN TASK: Created 2 Tasks and Semaphore. Now going to deep sleep...");
-	 printf(" \r\n====================================================================\r\n");
-	 OSTimeDlyHMSM(1, 0, 0, 0);
+		printf(" \r\nMAIN TASK: Created 2 Tasks and Semaphore. Now going to deep sleep...");
+		printf(" \r\n====================================================================\r\n");
+		OSTimeDlyHMSM(1, 0, 0, 0);
 	}
 }
-
 
 /*
 *********************************************************************************************************
@@ -133,146 +125,130 @@ static  void  AppTaskStart (void *p_arg)
 *********************************************************************************************************
 */
 
-static  void  AppTaskCreate (void)
+static void AppTaskCreate(void)
 {
 	/* Create User Tasks */
-    OSTaskCreate(AppTask0,											 // Name of Task
-                 (void *)0,											 // Pointer to arguments for task execution
-                 (OS_STK *)&AppTask0stk[APP_TASK_STK_SIZE - 1],		 // Pointer to top-of-stack of the assigned stack
-                  APP_TASK0_PRIO );									 // Task priority
+	OSTaskCreate(AppTask0,										// Name of Task
+				 (void *)0,										// Pointer to arguments for task execution
+				 (OS_STK *)&AppTask0stk[APP_TASK_STK_SIZE - 1], // Pointer to top-of-stack of the assigned stack
+				 APP_TASK0_PRIO);								// Task priority
 
-    OSTaskCreate(AppTask1,											 // Name of Task
-                 (void *)0,											 // Pointer to arguments for task execution
-                 (OS_STK *)&AppTask1stk[APP_TASK_STK_SIZE - 1],		 // Pointer to top-of-stack of the assigned stack
-                  APP_TASK1_PRIO );									 // Task priority
-
-
-
-
+	OSTaskCreate(AppTask1,										// Name of Task
+				 (void *)0,										// Pointer to arguments for task execution
+				 (OS_STK *)&AppTask1stk[APP_TASK_STK_SIZE - 1], // Pointer to top-of-stack of the assigned stack
+				 APP_TASK1_PRIO);								// Task priority
 }
 
 /*******************************************************************************************
-*                                    TASK-0 : AppTask0()
-*
-* Description : 
-*
-* Argument(s) : p_arg       Argument passed to 'AppTask0()' by 'OSTaskCreate()'.
-*
-* Return(s)   : none.
-*
-* Note(s)     : (1) The first line of code is used to prevent a compiler warning 
-*					because 'p_arg' is not used.  The compiler should not generate 
-*					any code for this statement.
-****************************************************************************************/
-//Writer task
-static  void  AppTask0 (void *p_arg)
+ *                                    TASK-0 : AppTask0()
+ *
+ * Description :
+ *
+ * Argument(s) : p_arg       Argument passed to 'AppTask0()' by 'OSTaskCreate()'.
+ *
+ * Return(s)   : none.
+ *
+ * Note(s)     : (1) The first line of code is used to prevent a compiler warning
+ *					because 'p_arg' is not used.  The compiler should not generate
+ *					any code for this statement.
+ ****************************************************************************************/
+// Writer task
+static void AppTask0(void *p_arg)
 {
-   	p_arg = p_arg;									   /*Just to avoid compiler Warning 			*/
+	p_arg = p_arg; /*Just to avoid compiler Warning 			*/
 
-    while(DEF_TRUE)
-    {     
-				printf("This is Writer Task");
-				printf("Running Writer Task");
-	 	do
-		{ 
-	 		printf("TASK_WRITER : Press any key to release Semaphore\n\r");
-			OSTimeDlyHMSM(0,0,2,0);
-		}while(!(GetKey()));								/*	Wait till a key is pressed	*/
-		
-		OSSemPost(writeMutex);									/*	Signal Semaphore	*/
+	while (DEF_TRUE)
+	{
+		printf("This is Writer Task");
+		printf("Running Writer Task");
+		do
+		{
+			printf("TASK_WRITER : Press any key to release Semaphore\n\r");
+			OSTimeDlyHMSM(0, 0, 2, 0);
+		} while (!(GetKey())); /*	Wait till a key is pressed	*/
+
+		OSSemPost(writeMutex); /*	Signal Semaphore	*/
 		printf("TASK_WRITER: Semaphore released.... \n\r");
-		OSTimeDlyHMSM(0,0,5,0);	
-
-    }
+		OSTimeDlyHMSM(0, 0, 5, 0);
+	}
 }
 
-
 /*******************************************************************************************
-*                                    TASK-1 : AppTask1()
-*
-* Description : 
-*
-* Argument(s) : p_arg       Argument passed to 'AppTask1()' by 'OSTaskCreate()'.
-*
-* Return(s)   : none.
-*
-* Note(s)     : (1) The first line of code is used to prevent a compiler warning 
-*					because 'p_arg' is not used.  The compiler should not generate 
-*					any code for this statement.
-****************************************************************************************/
+ *                                    TASK-1 : AppTask1()
+ *
+ * Description :
+ *
+ * Argument(s) : p_arg       Argument passed to 'AppTask1()' by 'OSTaskCreate()'.
+ *
+ * Return(s)   : none.
+ *
+ * Note(s)     : (1) The first line of code is used to prevent a compiler warning
+ *					because 'p_arg' is not used.  The compiler should not generate
+ *					any code for this statement.
+ ****************************************************************************************/
 
 // Reader task
-static  void  AppTask1 (void *p_arg)
+static void AppTask1(void *p_arg)
 {
 	unsigned char err;
-   	p_arg = p_arg;											 /* Just to avoid compiler Warning 			*/
+	p_arg = p_arg; /* Just to avoid compiler Warning 			*/
 
-   	while(DEF_TRUE)
-   	{
-			printf("This is Reader Task");
-			printf("Running Reader Task");			
-	 	do
+	while (DEF_TRUE)
+	{
+		printf("This is Reader Task");
+		printf("Running Reader Task");
+		do
 		{
-	 		printf("TASK_READER: Waiting for Writing Semaphore to signal\n\r");
-			OSSemPend(readCountMutex,200,&err);									/*	Wait on Semaphore	*/
+			printf("TASK_READER: Waiting for Writing Semaphore to signal\n\r");
+			OSSemPend(readCountMutex, 200, &err); /*	Wait on Semaphore	*/
 			readCount++;
-			
-			if(readCount == 1){
-				OSSemPend(writeMutex);
+
+			if (readCount == 1)
+			{
+				OSSemPend(writeMutex, 200, &err);
 			}
-			
+
 			OSSemPost(readCountMutex);
-			
+
 			printf("Critical Section");
-			
-			OSSemPend(readCountMutex);
+
+			OSSemPend(readCountMutex, 200, &err);
 			readCount--;
-		}while(err != OS_NO_ERR);
+		} while (err != OS_NO_ERR);
 		printf("TASK1: Semaphore Acquired.... TASK1 will now perform operations....\n\r\r\n");
-		OSTimeDlyHMSM(0,0,3,0);
-			
-		if(readCount == 0){
+		OSTimeDlyHMSM(0, 0, 3, 0);
+
+		if (readCount == 0)
+		{
 			OSSemPost(writeMutex);
 		}
 		OSSemPost(readCountMutex);
-		
-   	}
+	}
 }
-
-
 
 /*******************************************************************************************
-*                                    TASK-2 : AppTask2()
-*
-* Description : 
-*
-* Argument(s) : p_arg       Argument passed to 'AppTask2()' by 'OSTaskCreate()'.
-*
-* Return(s)   : none.
-*
-* Note(s)     : (1) The first line of code is used to prevent a compiler warning 
-*					because 'p_arg' is not used.  The compiler should not generate 
-*					any code for this statement.
-****************************************************************************************/
+ *                                    TASK-2 : AppTask2()
+ *
+ * Description :
+ *
+ * Argument(s) : p_arg       Argument passed to 'AppTask2()' by 'OSTaskCreate()'.
+ *
+ * Return(s)   : none.
+ *
+ * Note(s)     : (1) The first line of code is used to prevent a compiler warning
+ *					because 'p_arg' is not used.  The compiler should not generate
+ *					any code for this statement.
+ ****************************************************************************************/
 
-static  void  AppTask2 (void *p_arg)
+static void AppTask2(void *p_arg)
 {
-   p_arg = p_arg;										/* Just to avoid compiler Warning 		*/
+	p_arg = p_arg; /* Just to avoid compiler Warning 		*/
 
-    while(DEF_TRUE)
-    {
-	 /* User Code Here */
-
-
-   }
+	while (DEF_TRUE)
+	{
+		/* User Code Here */
+	}
 }
-
-
-
-
-
-
-
 
 /*
 *********************************************************************************************************
@@ -296,10 +272,10 @@ static  void  AppTask2 (void *p_arg)
 *********************************************************************************************************
 */
 
-void  App_TaskCreateHook (OS_TCB *ptcb)
+void App_TaskCreateHook(OS_TCB *ptcb)
 {
 #if (OS_VIEW_MODULE > 0)
-    OSView_TaskCreateHook(ptcb);
+	OSView_TaskCreateHook(ptcb);
 #endif
 }
 
@@ -315,9 +291,9 @@ void  App_TaskCreateHook (OS_TCB *ptcb)
 *********************************************************************************************************
 */
 
-void  App_TaskDelHook (OS_TCB *ptcb)
+void App_TaskDelHook(OS_TCB *ptcb)
 {
-    (void)ptcb;
+	(void)ptcb;
 }
 
 /*
@@ -334,7 +310,7 @@ void  App_TaskDelHook (OS_TCB *ptcb)
 */
 
 #if OS_VERSION >= 251
-void  App_TaskIdleHook (void)
+void App_TaskIdleHook(void)
 {
 }
 #endif
@@ -350,7 +326,7 @@ void  App_TaskIdleHook (void)
 *********************************************************************************************************
 */
 
-void  App_TaskStatHook (void)
+void App_TaskStatHook(void)
 {
 }
 
@@ -372,10 +348,10 @@ void  App_TaskStatHook (void)
 */
 
 #if OS_TASK_SW_HOOK_EN > 0
-void  App_TaskSwHook (void)
+void App_TaskSwHook(void)
 {
 #if (OS_VIEW_MODULE > 0)
-    OSView_TaskSwHook();
+	OSView_TaskSwHook();
 #endif
 }
 #endif
@@ -394,9 +370,9 @@ void  App_TaskSwHook (void)
 */
 
 #if OS_VERSION >= 204
-void  App_TCBInitHook (OS_TCB *ptcb)
+void App_TCBInitHook(OS_TCB *ptcb)
 {
-    (void)ptcb;
+	(void)ptcb;
 }
 #endif
 
@@ -413,10 +389,10 @@ void  App_TCBInitHook (OS_TCB *ptcb)
 */
 
 #if OS_TIME_TICK_HOOK_EN > 0
-void  App_TimeTickHook (void)
+void App_TimeTickHook(void)
 {
 #if (OS_VIEW_MODULE > 0)
-    OSView_TickHook();
+	OSView_TickHook();
 #endif
 }
 #endif
