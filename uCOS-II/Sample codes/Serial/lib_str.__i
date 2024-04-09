@@ -1,0 +1,1 @@
+-c --cpu ARM7TDMI -g -O0 --apcs=interwork -I.\include -I "C:\Keil\ARM\CMSIS\Include" -I "C:\Keil\ARM\INC\Philips" -o "lib_str.o" --omf_browse "lib_str.crf" --depend "lib_str.d" "uCOS-II\lib_str.c"

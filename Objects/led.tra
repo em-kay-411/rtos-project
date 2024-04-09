@@ -1,0 +1,45 @@
+*** Creating Trace Output File '.\Objects\led.tra' Ok.
+### Preparing for ADS-LD.
+### Creating ADS-LD Command Line
+### List of Objects: adding '".\objects\cpu_a.o"'
+### List of Objects: adding '".\objects\lib_mem.o"'
+### List of Objects: adding '".\objects\lib_str.o"'
+### List of Objects: adding '".\objects\os_core.o"'
+### List of Objects: adding '".\objects\os_cpu_a.o"'
+### List of Objects: adding '".\objects\os_cpu_c.o"'
+### List of Objects: adding '".\objects\os_dbg.o"'
+### List of Objects: adding '".\objects\os_flag.o"'
+### List of Objects: adding '".\objects\os_mbox.o"'
+### List of Objects: adding '".\objects\os_mem.o"'
+### List of Objects: adding '".\objects\os_mutex.o"'
+### List of Objects: adding '".\objects\bsp.o"'
+### List of Objects: adding '".\objects\os_q.o"'
+### List of Objects: adding '".\objects\os_sem.o"'
+### List of Objects: adding '".\objects\os_task.o"'
+### List of Objects: adding '".\objects\os_time.o"'
+### List of Objects: adding '".\objects\os_tmr.o"'
+### List of Objects: adding '".\objects\adc.o"'
+### List of Objects: adding '".\objects\app.o"'
+### List of Objects: adding '".\objects\init.o"'
+### List of Objects: adding '".\objects\kbd.o"'
+### List of Objects: adding '".\objects\lcd.o"'
+### List of Objects: adding '".\objects\led.o"'
+### List of Objects: adding '".\objects\startup.o"'
+### List of Objects: adding '".\objects\uart.o"'
+### List of Objects: adding '".\objects\vectors.o"'
+### ADS-LD Command completed:
+--cpu ARM7TDMI ".\objects\cpu_a.o" ".\objects\lib_mem.o" ".\objects\lib_str.o" ".\objects\os_core.o" ".\objects\os_cpu_a.o" ".\objects\os_cpu_c.o" ".\objects\os_dbg.o" ".\objects\os_flag.o" ".\objects\os_mbox.o" ".\objects\os_mem.o" ".\objects\os_mutex.o" ".\objects\bsp.o" ".\objects\os_q.o" ".\objects\os_sem.o" ".\objects\os_task.o" ".\objects\os_time.o" ".\objects\os_tmr.o" ".\objects\adc.o" ".\objects\app.o" ".\objects\init.o" ".\objects\kbd.o" ".\objects\lcd.o" ".\objects\led.o" ".\objects\startup.o" ".\objects\uart.o" ".\objects\vectors.o" 
+--strict --scatter ".\ScatterFile.sct" 
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\Listings\led.map" -o .\Objects\led.axf### Preparing Environment (PrepEnvAds)
+### ADS-LD Output File: '.\Objects\led.axf'
+### ADS-LD Command File: '.\Objects\led.lnp'
+### Checking for dirty Components...
+### Creating CmdFile '.\Objects\led.lnp', Handle=0x00000654
+### Writing '.lnp' file
+### ADS-LD Command file '.\Objects\led.lnp' is ready.
+### ADS-LD: About to start ADS-LD Thread.
+### ADS-LD: executed with 0 errors
+### Updating obj list
+### LDADS_file() completed.

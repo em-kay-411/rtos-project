@@ -1,0 +1,1 @@
+-c --cpu ARM7TDMI -g -O0 --apcs=interwork -I.\include -I "C:\Keil\ARM\CMSIS\Include" -I "C:\Keil\ARM\INC\Philips" -o "os_mbox.o" --omf_browse "os_mbox.crf" --depend "os_mbox.d" "uCOS-II\os_mbox.c"

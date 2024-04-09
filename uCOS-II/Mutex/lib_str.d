@@ -1,0 +1,11 @@
+lib_str.o: uCOS-II\lib_str.c
+lib_str.o: .\app\include\lib_str.h
+lib_str.o: .\app\include\cpu.h
+lib_str.o: .\app\include\cpu_def.h
+lib_str.o: .\app\include\lib_def.h
+lib_str.o: .\app\include\app_cfg.h
+lib_str.o: C:\Keil\ARM\RV31\INC\stdlib.h
+lib_str.o: C:\Keil\ARM\RV31\INC\ctype.h
+lib_str.o: C:\Keil\ARM\RV31\INC\errno.h
+lib_str.o: C:\Keil\ARM\RV31\INC\limits.h
+lib_str.o: C:\Keil\ARM\RV31\INC\stdio.h

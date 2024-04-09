@@ -1,0 +1,5 @@
+-c --cpu ARM7TDMI -g -O0 --apcs=interwork --split_sections -I.\include 
+-I C:\Keil\ARM\RV31\INC 
+-I C:\Keil\ARM\CMSIS\Include 
+-I C:\Keil\ARM\Inc\Philips 
+-o ".\Objects\lib_str.o" --omf_browse ".\Objects\lib_str.crf" --depend ".\Objects\lib_str.d" "uCOS-II\lib_str.c"

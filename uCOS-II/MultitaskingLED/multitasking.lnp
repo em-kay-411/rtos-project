@@ -1,0 +1,4 @@
+--cpu ARM7TDMI "bsp.o" "cpu_a.o" "lib_mem.o" "lib_str.o" "os_core.o" "os_cpu_a.o" "os_cpu_c.o" "os_dbg.o" "os_flag.o" "os_mbox.o" "os_mem.o" "os_mutex.o" "os_q.o" "os_sem.o" "os_task.o" "os_time.o" "os_tmr.o" "adc.o" "app.o" "init.o" "kbd.o" "lcd.o" "uart.o" "vectors.o" "led.o" --strict --scatter ".\ScatterFile.sct" 
+--autoat --summary_stderr --info summarysizes --map --xref --callgraph --symbols 
+--info sizes --info totals --info unused --info veneers 
+ --list ".\multitasking.map" -o "multitasking.axf"

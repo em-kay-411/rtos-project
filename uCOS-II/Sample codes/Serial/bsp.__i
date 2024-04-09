@@ -1,0 +1,1 @@
+-c --cpu ARM7TDMI -g -O0 --apcs=interwork -I.\include -I "C:\Keil\ARM\CMSIS\Include" -I "C:\Keil\ARM\INC\Philips" -o "bsp.o" --omf_browse "bsp.crf" --depend "bsp.d" "uCOS-II\bsp.c"

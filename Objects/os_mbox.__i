@@ -1,0 +1,5 @@
+-c --cpu ARM7TDMI -g -O0 --apcs=interwork --split_sections -I.\include 
+-I C:\Keil\ARM\RV31\INC 
+-I C:\Keil\ARM\CMSIS\Include 
+-I C:\Keil\ARM\Inc\Philips 
+-o ".\Objects\os_mbox.o" --omf_browse ".\Objects\os_mbox.crf" --depend ".\Objects\os_mbox.d" "uCOS-II\os_mbox.c"

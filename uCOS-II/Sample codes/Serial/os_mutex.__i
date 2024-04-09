@@ -1,0 +1,1 @@
+-c --cpu ARM7TDMI -g -O0 --apcs=interwork -I.\include -I "C:\Keil\ARM\CMSIS\Include" -I "C:\Keil\ARM\INC\Philips" -o "os_mutex.o" --omf_browse "os_mutex.crf" --depend "os_mutex.d" "uCOS-II\os_mutex.c"
